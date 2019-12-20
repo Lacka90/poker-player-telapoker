@@ -23,7 +23,7 @@ export class Player {
     const cards = me.hole_cards;
     const ranks = [
       ...cards.map(c => c.rank),
-      ...gameState.community_cards.map(c => c.rank)
+      ...(gameState.community_cards || []).map(c => c.rank)
     ];
     const rankGroups = _.groupBy(ranks, r => r);
     const allIn = me.stack - me.bet;
