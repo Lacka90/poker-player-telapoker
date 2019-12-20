@@ -1,6 +1,6 @@
 import { Card, GameState } from "./interfaces";
 
-export const gameState = (cards: Card[]) =>
+export const gameState = (cards: Card[] = [], commCards: Card[] = []) =>
   ({
     tournament_id: "5dfa0f3f557a0b0004000007",
     game_id: "5dfccf000c8b7f0004000100",
@@ -53,12 +53,7 @@ export const gameState = (cards: Card[]) =>
     big_blind: 4,
     orbits: 0,
     dealer: 2,
-    community_cards: [
-      // { rank: "8", suit: "spades" },
-      // { rank: "6", suit: "hearts" },
-      // { rank: "2", suit: "spades" },
-      // { rank: "5", suit: "hearts" }
-    ],
+    community_cards: commCards,
     current_buy_in: 6,
     pot: 200,
     in_action: 0,
