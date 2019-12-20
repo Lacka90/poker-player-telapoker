@@ -2,20 +2,45 @@ import { GameState, Card, rankOrder } from "./interfaces";
 import * as _ from "lodash";
 import { handValue } from "./hand-value";
 
-function hasEqualRank(rankGroups: { [rank: string]: string[] }, num: number) {
-  let rank;
-  let found = false;
+function howManyOfTheSameRank(
+  rankGroups: { [rank: string]: string[] },
+  numberOfAppearancesToSearchFor: number
+): { ranks: string[]; found: number } {
+  let ranks = [];
+  let found = 0;
   Object.keys(rankGroups).forEach(r => {
-    if (!found) {
-      rank = r;
-      found = rankGroups[r].length === num;
+    if (rankGroups[r].length === numberOfAppearancesToSearchFor) {
+      ranks.push[r];
+      found += 1;
     }
   });
 
-  return { rank: found ? rank : undefined, found };
+  return { ranks, found };
 }
 
-function isStraight(allCards: Card[]): boolean {
+function hasPoker(
+  rankGroups: _.Dictionary<
+    (
+      | "2"
+      | "3"
+      | "4"
+      | "5"
+      | "6"
+      | "7"
+      | "8"
+      | "9"
+      | "10"
+      | "J"
+      | "Q"
+      | "K"
+      | "A"
+    )[]
+  >
+) {
+  return howManyOfTheSameRank(rankGroups, 4).found === 1;
+}
+
+function hasStraight(allCards: Card[]): boolean {
   //szamsor
   if (!allCards || allCards.length < 5) {
     return false;
@@ -44,7 +69,10 @@ function isStraight(allCards: Card[]): boolean {
   return false;
 }
 
-function isFlush(suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diamonds")[]> = {}): boolean { //szinsor
+function hasFlush(
+  suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diamonds")[]> = {}
+): boolean {
+  //szinsor
   Object.keys(suitGroups).forEach(key => {
     if (suitGroups[key].length >= 5) {
       return true;
@@ -55,6 +83,19 @@ function isFlush(suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diam
 
 function isBiggerByOne(i: number, j: number): boolean {
   return j === i + 1;
+}
+
+function potSizedBet(
+  ourMoney: number,
+  pot: number,
+  percent: number,
+  max = 4000,
+  min = 0
+) {
+  max = Math.min(ourMoney, max);
+  min = Math.min(ourMoney, min);
+  const bet = Math.floor(pot * percent);
+  return bet < min ? min : bet > max ? max : bet;
 }
 
 export class Player {
@@ -75,57 +116,82 @@ export class Player {
     const rankGroups = _.groupBy(ranks, r => r);
     const suitGroups = _.groupBy(suits, s => s);
 
+    const inGamePlayers = gameState.players.reduce(
+      (acc, player) => (acc + player.status !== "out" ? 1 : 0),
+      0
+    );
+
     const allIn = me.stack - me.bet;
     if (!gameState.community_cards.length) {
       const value = handValue(cards);
-      if (value === 1) return betCallback(allIn);
-      if (value < 4)
-        return betCallback(
-          Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
-        );
-      if (value >= 4 && value < 7) {
-        if (gameState.current_buy_in < 50) {
+      if (inGamePlayers > 2) {
+        if (value === 1) return betCallback(allIn);
+        if (value < 4)
           return betCallback(
             Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
           );
+        if (value >= 4 && value < 7) {
+          if (gameState.current_buy_in < 50) {
+            return betCallback(
+              Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+            );
+          }
+        }
+      } else {
+        if (value === 2) return betCallback(allIn);
+        if (value < 5)
+          return betCallback(
+            Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+          );
+        if (value >= 5 && value < 6) {
+          if (gameState.current_buy_in < 100) {
+            return betCallback(
+              Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+            );
+          }
+        }
+        if (value >= 6 && value < 8) {
+          if (gameState.current_buy_in < 50) {
+            return betCallback(
+              Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+            );
+          }
         }
       }
     }
 
-    if (hasEqualRank(rankGroups, 4).found) {
+    if (hasPoker(rankGroups)) {
       return betCallback(allIn);
     }
 
-    const hasFlush = isFlush(suitGroups);
-    if (hasFlush) {
-      return betCallback(allIn / 2);
+    if (hasFlush(suitGroups)) {
+      return betCallback(potSizedBet(allIn, gameState.pot, 1, 1500, 250));
     }
 
-    const hasStraight = isStraight([
-      ...gameState.community_cards,
-      ...cards
-    ]);
-    if (hasStraight) {
-      return betCallback(250);
+    if (hasStraight([...gameState.community_cards, ...cards])) {
+      return betCallback(potSizedBet(allIn, gameState.pot, 0.6, 1000, 200));
     }
 
-    const drill = hasEqualRank(rankGroups, 3);
-    if (drill.found) {
-      if (drill.rank) {
-        delete rankGroups[drill.rank];
+    const drill = howManyOfTheSameRank(rankGroups, 3);
+    if (drill.found === 1) {
+      const drillRankGroups = _.cloneDeep(rankGroups);
+      delete drillRankGroups[drill.ranks[0]];
+      const pairAboveDrill = howManyOfTheSameRank(drillRankGroups, 2);
+
+      if (pairAboveDrill.found >= 1) {
+        // fullhouse
+        return betCallback(potSizedBet(allIn, gameState.pot, 1.2, 4000, 300));
       }
 
-      const fullHouse = hasEqualRank(rankGroups, 2);
-
-      if (fullHouse.found) {
-        return betCallback(allIn / 2);
-      }
-
-      return betCallback(200);
+      return betCallback(potSizedBet(allIn, gameState.pot, 0.6, 800, 150));
     }
 
-    if (hasEqualRank(rankGroups, 2).found) {
-      return betCallback(100);
+    if (howManyOfTheSameRank(rankGroups, 2).found >= 2) {
+      return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 150, 10));
+    }
+
+    if (howManyOfTheSameRank(rankGroups, 2).found === 1) {
+      return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 100, 10));
     }
 
     return betCallback(0);
