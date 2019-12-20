@@ -1,3 +1,5 @@
+export const rankOrder = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
 export interface GameState {
   /** ID of the current tournament */
   tournament_id: string;
@@ -43,6 +45,7 @@ export interface GameState {
   /** Finally the array of community cards. */
   community_cards: Card[];
 }
+
 export interface Player {
   /** Id of the player (same as the index) */
   id: number;
