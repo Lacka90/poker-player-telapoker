@@ -23,12 +23,12 @@ export class Player {
     const cards = me.hole_cards;
     const ranks = [
       ...cards.map(c => c.rank),
-      ...gameState.community_cards.map(c => c.rank)
+      ...(gameState.community_cards || []).map(c => c.rank)
     ];
     const rankGroups = _.groupBy(ranks, r => r);
     const allIn = me.stack - me.bet;
     if (hasEqualRank(rankGroups, 4).found) {
-      betCallback(allIn);
+      return betCallback(allIn);
     }
 
     const drill = hasEqualRank(rankGroups, 3);
@@ -47,6 +47,12 @@ export class Player {
 
     if (hasEqualRank(rankGroups, 2).found) {
       return betCallback(100);
+    }
+
+    if (gameState.current_buy_in < 50) {
+      return betCallback(
+        Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+      );
     }
 
     return betCallback(0);
