@@ -44,7 +44,10 @@ function isStraight(allCards: Card[]): boolean {
   return false;
 }
 
-function isFlush(suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diamonds")[]> = {}): boolean { //szinsor
+function isFlush(
+  suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diamonds")[]> = {}
+): boolean {
+  //szinsor
   Object.keys(suitGroups).forEach(key => {
     if (suitGroups[key].length >= 5) {
       return true;
@@ -55,6 +58,11 @@ function isFlush(suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diam
 
 function isBiggerByOne(i: number, j: number): boolean {
   return j === i + 1;
+}
+
+function potSizedBet(pot: number, percent: number, max = 4000, min = 0) {
+  const bet = Math.floor(pot * percent);
+  return bet < min ? min : bet > max ? max : bet;
 }
 
 export class Player {
@@ -98,15 +106,12 @@ export class Player {
 
     const hasFlush = isFlush(suitGroups);
     if (hasFlush) {
-      return betCallback(allIn / 2);
+      return betCallback(potSizedBet(gameState.pot, 1, 1500, 250));
     }
 
-    const hasStraight = isStraight([
-      ...gameState.community_cards,
-      ...cards
-    ]);
+    const hasStraight = isStraight([...gameState.community_cards, ...cards]);
     if (hasStraight) {
-      return betCallback(250);
+      return betCallback(potSizedBet(gameState.pot, 0.6, 1000, 200));
     }
 
     const drill = hasEqualRank(rankGroups, 3);
@@ -118,14 +123,14 @@ export class Player {
       const fullHouse = hasEqualRank(rankGroups, 2);
 
       if (fullHouse.found) {
-        return betCallback(allIn / 2);
+        return betCallback(potSizedBet(gameState.pot, 1.2, 4000, 300));
       }
 
-      return betCallback(200);
+      return betCallback(potSizedBet(gameState.pot, 0.6, 800, 150));
     }
 
     if (hasEqualRank(rankGroups, 2).found) {
-      return betCallback(100);
+      return betCallback(potSizedBet(gameState.pot, 0.8, 100, 10));
     }
 
     return betCallback(0);
