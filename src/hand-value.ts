@@ -25,7 +25,7 @@ const rankToNumber = (card: Card): Card2 => {
   };
 };
 
-const compareCards = (a: Card, b: Card) => {
+const compareCards = (a: Card2, b: Card2) => {
   if (a.rank < b.rank) return -1;
   if (a.rank > b.rank) return 1;
   return 0;
@@ -35,53 +35,35 @@ const suited = (cards: Card2[]) => {
   return cards[0].suit === cards[1].suit;
 };
 
-const pair = (cards: Card2[]) => {
-  return cards[0].rank === cards[1].rank;
+const matrix = [
+  [1, 1, 2, 2, 3, 5, 5, 5, 5, 5, 5, 5, 5],
+  [2, 1, 2, 3, 4, 6, 7, 7, 7, 7, 7, 7, 7],
+  [3, 4, 1, 3, 4, 5, 7, 9, 9, 9, 9, 9, 9],
+  [4, 5, 5, 1, 3, 4, 6, 8, 9, 9, 9, 9, 9],
+  [6, 6, 6, 5, 2, 4, 5, 7, 9, 9, 9, 9, 9],
+  [8, 8, 8, 7, 7, 3, 4, 5, 8, 9, 9, 9, 9],
+  [9, 9, 9, 8, 8, 7, 4, 5, 6, 8, 9, 9, 9],
+  [9, 9, 9, 9, 9, 9, 8, 5, 5, 6, 8, 9, 9],
+  [9, 9, 9, 9, 9, 9, 9, 8, 6, 7, 7, 9, 9],
+  [9, 9, 9, 9, 9, 9, 9, 9, 8, 6, 6, 7, 9],
+  [9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 7, 7, 8],
+  [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 7, 8],
+  [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 7]
+];
+
+const getFromMatrix = (card1: number, card2: number): number => {
+  const col = 14 - card1;
+  const row = 14 - card2;
+  return matrix[row][col];
 };
 
-const includes = (array: any[], item: any) => array.indexOf(item) !== -1;
-
-const handValue = (_cards: Card[]): number => {
-  const cards = _cards.sort(compareCards).map(card => rankToNumber(card));
-
+export const handValue = (_cards: Card[]): number => {
+  const cards: Card2[] = _cards
+    .map(card => rankToNumber(card))
+    .sort(compareCards);
   if (suited(cards)) {
-    if (cards[1].rank === 14) {
-      if (cards[0].rank === 13) return 1;
-      if (includes([12, 11], cards[0].rank)) return 2;
-      if (includes([10], cards[0].rank)) return 3;
-      if (cards[0].rank < 10) return 5;
-    }
-    if (cards[1].rank === 13) {
-      if (cards[0].rank === 12) return 2;
-      if (cards[0].rank === 11) return 3;
-      if (cards[0].rank === 10) return 4;
-      if (cards[0].rank === 9) return 6;
-      if (cards[0].rank < 9) return 7;
-    }
+    return getFromMatrix(cards[0].rank, cards[1].rank);
   } else {
-    if (pair) {
-      if (cards[0].rank > 10) return 1;
-      if (cards[0].rank === 10) return 2;
-      if (cards[0].rank === 9) return 3;
-      if (cards[0].rank === 8) return 4;
-      if (cards[0].rank === 7) return 5;
-      if ([5, 6].indexOf(cards[0].rank) !== -1) return 6;
-      else return 7;
-    } else {
-      if (cards[0].rank < 8) return -1;
-      if (cards[0].rank === 8 && includes([10, 11], cards[1].rank)) return 8;
-      if (cards[0].rank === 8 && includes([9], cards[1].rank)) return 7;
-      if (cards[0].rank === 9 && includes([14, 13, 12], cards[1].rank))
-        return 8;
-      if (cards[0].rank === 9 && includes([11, 10], cards[1].rank)) return 7;
-      if (cards[0].rank === 10 && includes([14, 13, 12], cards[1].rank))
-        return 6;
-      if (cards[0].rank === 10 && includes([11], cards[1].rank)) return 5;
-      if (cards[0].rank === 11 && includes([14], cards[1].rank)) return 4;
-      if (cards[0].rank === 11 && includes([13, 12], cards[1].rank)) return 5;
-      if (cards[0].rank === 12 && includes([14], cards[1].rank)) return 3;
-      if (cards[0].rank === 12 && includes([13], cards[1].rank)) return 4;
-      if (cards[0].rank === 13 && cards[1].rank === 14) return 2;
-    }
+    return getFromMatrix(cards[1].rank, cards[0].rank);
   }
 };
