@@ -15,6 +15,48 @@ function hasEqualRank(rankGroups: { [rank: string]: string[] }, num: number) {
   return { rank, found };
 }
 
+function isStraight(allCards: Card[]): boolean {
+  //szamsor
+  if (!allCards || allCards.length < 5) {
+    return false;
+  }
+  const sortedUnique = _.uniq(
+    allCards.map(card => rankOrder.indexOf(card.rank)).sort()
+  );
+  if (sortedUnique.length < 5) {
+    return false;
+  }
+  for (let i = 0; i <= sortedUnique.length - 5; i++) {
+    const current = sortedUnique[i];
+    const next1 = sortedUnique[i + 1];
+    const next2 = sortedUnique[i + 2];
+    const next3 = sortedUnique[i + 3];
+    const next4 = sortedUnique[i + 4];
+    if (
+      this.isBiggerByOne(current, next1) &&
+      this.isBiggerByOne(next1, next2) &&
+      this.isBiggerByOne(next2, next3) &&
+      this.isBiggerByOne(next3, next4)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isFlush(suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diamonds")[]> = {}): boolean { //szinsor
+  Object.keys(suitGroups).forEach(key => {
+    if (suitGroups[key].length >= 5) {
+      return true;
+    }
+  });
+  return false;
+}
+
+function isBiggerByOne(i: number, j: number): boolean {
+  return j === i + 1;
+}
+
 export class Player {
   public betRequest(
     gameState: GameState,
@@ -54,12 +96,12 @@ export class Player {
       return betCallback(allIn);
     }
 
-    const hasFlush = this.isFlush(suitGroups);
+    const hasFlush = isFlush(suitGroups);
     if (hasFlush) {
       return betCallback(allIn / 2);
     }
 
-    const hasStraight = this.isStraight([...gameState.community_cards, ...cards]);
+    const hasStraight = isStraight([...gameState.community_cards, ...cards]);
     if (hasStraight) {
       return betCallback(250);
     }
@@ -85,48 +127,6 @@ export class Player {
   }
 
   public showdown(gameState: any): void {}
-
-  private isStraight(allCards: Card[]): boolean {
-    //szamsor
-    if (!allCards || allCards.length < 5) {
-      return false;
-    }
-    const sortedUnique = _.uniq(
-      allCards.map(card => rankOrder.indexOf(card.rank)).sort()
-    );
-    if (sortedUnique.length < 5) {
-      return false;
-    }
-    for (let i = 0; i <= sortedUnique.length - 5; i++) {
-      const current = sortedUnique[i];
-      const next1 = sortedUnique[i + 1];
-      const next2 = sortedUnique[i + 2];
-      const next3 = sortedUnique[i + 3];
-      const next4 = sortedUnique[i + 4];
-      if (
-        this.isBiggerByOne(current, next1) &&
-        this.isBiggerByOne(next1, next2) &&
-        this.isBiggerByOne(next2, next3) &&
-        this.isBiggerByOne(next3, next4)
-      ) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private isFlush(suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diamonds")[]> = {}): boolean { //szinsor
-    Object.keys(suitGroups).forEach(key => {
-      if (suitGroups[key].length >= 5) {
-        return true;
-      }
-    });
-    return false;
-  }
-
-  private isBiggerByOne(i: number, j: number): boolean {
-    return j === i + 1;
-  }
 }
 
 export default Player;
