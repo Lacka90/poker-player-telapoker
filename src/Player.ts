@@ -1,5 +1,10 @@
+import { GameState } from "./interfaces";
+
 export class Player {
-  public betRequest(gameState: any, betCallback: (bet: number) => void): void {
+  public betRequest(
+    gameState: GameState,
+    betCallback: (bet: number) => void
+  ): void {
     const me = gameState.players[gameState.in_action];
     const cards = me.hole_cards;
     const pair = cards[0].rank === cards[1].rank;
