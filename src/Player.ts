@@ -56,7 +56,7 @@ export class Player {
 
     const hasFlush = this.isFlush(suitGroups);
     if (hasFlush) {
-      return betCallback(allIn);
+      return betCallback(allIn / 2);
     }
 
     const hasStraight = this.isStraight([...gameState.community_cards, ...cards]);
