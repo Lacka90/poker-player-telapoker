@@ -25,18 +25,29 @@ export class Player {
       ...cards.map(c => c.rank),
       ...(gameState.community_cards || []).map(c => c.rank)
     ];
+    const suits = [
+      ...cards.map(c => c.suit),
+      ...(gameState.community_cards || []).map(c => c.suit)
+    ];
     const rankGroups = _.groupBy(ranks, r => r);
+    const suitGroups = _.groupBy(suits, s => s);
+
     const allIn = me.stack - me.bet;
     if (hasEqualRank(rankGroups, 4).found) {
       return betCallback(allIn);
     }
 
-    const drill = hasEqualRank(rankGroups, 3);
+    const hasFlush = this.isFlush(suitGroups);
+    if (hasFlush) {
+      return betCallback(300);
+    }
+
     const hasStraight = this.isStraight([...gameState.community_cards, ...cards]);
     if (hasStraight) {
       return betCallback(250);
     }
-
+    
+    const drill = hasEqualRank(rankGroups, 3);
     if (drill.found) {
       delete rankGroups[drill.rank];
 
@@ -87,6 +98,15 @@ export class Player {
       }
 
     }
+    return false;
+  }
+
+  private isFlush(suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diamonds")[]> = {}): boolean { //szinsor
+    Object.keys(suitGroups).forEach(key => {
+      if (suitGroups[key].length >= 5) {
+        return true;
+      }
+    });
     return false;
   }
 
