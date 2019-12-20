@@ -117,9 +117,10 @@ export class Player {
     const suitGroups = _.groupBy(suits, s => s);
 
     const inGamePlayers = gameState.players.reduce(
-      (acc, player) => (acc + player.status !== "out" ? 1 : 0),
+      (acc, player) => (acc + (player.status !== "out" ? 1 : 0)),
       0
     );
+    console.error('ingameplayers', inGamePlayers);
 
     const allIn = me.stack - me.bet;
     if (!gameState.community_cards.length) {
@@ -159,6 +160,8 @@ export class Player {
         }
       }
     }
+
+    console.error('abovePoker');
 
     if (hasPoker(rankGroups)) {
       return betCallback(allIn);
