@@ -32,10 +32,9 @@ export class Player {
     }
 
     const drill = hasEqualRank(rankGroups, 3);
-    const pair = cards[0].rank === cards[1].rank;
     const hasStraight = this.isStraight([...gameState.community_cards, ...cards]);
-    if(hasStraight) {
-      betCallback(150);
+    if (hasStraight) {
+      return betCallback(250);
     }
 
     if (drill.found) {
