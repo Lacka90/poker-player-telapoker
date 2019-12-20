@@ -136,7 +136,7 @@ export class Player {
     console.error("ingameplayers", inGamePlayers);
 
     if (gameState.community_cards.length > 3) {
-      if (gameState.pot > Math.floor(me.stack / 3) || me.stack < 200) {
+      if (gameState.pot > Math.floor(me.stack / 2) || me.stack < 200) {
         return betCallback(
           Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
         );
