@@ -49,6 +49,10 @@ export class Player {
       return betCallback(100);
     }
 
+    if (gameState.current_buy_in < 50) {
+      return betCallback(gameState.current_buy_in - me.bet);
+    }
+
     return betCallback(0);
   }
 
