@@ -219,11 +219,15 @@ export class Player {
     }
 
     if (howManyOfTheSameRank(rankGroups, 2).found >= 2) {
-      return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 150, 50));
+      if (me.bet + potSizedBet(allIn, gameState.pot, 0.8, 150, 50) < 400) {
+        return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 150, 50));
+      }
     }
 
     if (howManyOfTheSameRank(rankGroups, 2).found === 1) {
-      return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 100, 10));
+      if (me.bet + potSizedBet(allIn, gameState.pot, 0.8, 150, 50) < 400) {
+        return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 100, 10));
+      }
     }
     if (lastPositionBet(gameState) > 0)
       return betCallback(lastPositionBet(gameState));
