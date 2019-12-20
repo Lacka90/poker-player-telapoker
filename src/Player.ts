@@ -135,6 +135,14 @@ export class Player {
     );
     console.error("ingameplayers", inGamePlayers);
 
+    if (gameState.community_cards.length > 3) {
+      if (gameState.pot > Math.floor(me.stack / 3) || me.stack < 200) {
+        return betCallback(
+          Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+        );
+      }
+    }
+
     const allIn = Math.max(me.stack, 0);
     if (!gameState.community_cards.length) {
       const value = handValue(cards);
