@@ -120,7 +120,6 @@ export class Player {
       (acc, player) => (acc + (player.status !== "out" ? 1 : 0)),
       0
     );
-    console.error('ingameplayers', inGamePlayers);
 
     const allIn = me.stack - me.bet;
     if (!gameState.community_cards.length) {
@@ -161,8 +160,6 @@ export class Player {
       }
     }
 
-    console.error('abovePoker');
-
     if (hasPoker(rankGroups)) {
       return betCallback(allIn);
     }
@@ -190,7 +187,7 @@ export class Player {
     }
 
     if (howManyOfTheSameRank(rankGroups, 2).found >= 2) {
-      return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 150, 10));
+      return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 150, 50));
     }
 
     if (howManyOfTheSameRank(rankGroups, 2).found === 1) {

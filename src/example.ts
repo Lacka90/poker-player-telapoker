@@ -60,7 +60,7 @@ export const gameState = (cards: Card[]) =>
       // { rank: "5", suit: "hearts" }
     ],
     current_buy_in: 6,
-    pot: 10,
+    pot: 200,
     in_action: 0,
     bet_index: 0,
     minimum_raise: 10
