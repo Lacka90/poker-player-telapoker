@@ -99,11 +99,23 @@ function potSizedBet(
   return bet < min ? min : bet > max ? max : bet;
 }
 
+function failSafeBet(gameState: GameState, bet: number) {
+  const me = gameState.players[gameState.in_action];
+  const minRaise = gameState.current_buy_in - me.bet + gameState.minimum_raise;
+  if (bet > gameState.current_buy_in - me.bet && bet < minRaise) bet = minRaise;
+  if (bet < 0) bet = 0;
+  if (bet > me.stack) bet = me.stack;
+  return bet;
+}
+
 export class Player {
   public betRequest(
     gameState: GameState,
-    betCallback: (bet: number) => void
+    _betCallback: (bet: number) => void
   ): void {
+    const betCallback = (bet: number) => {
+      _betCallback(failSafeBet(gameState, bet));
+    };
     const me = gameState.players[gameState.in_action];
     const cards = me.hole_cards;
     const ranks = [
@@ -118,10 +130,10 @@ export class Player {
     const suitGroups = _.groupBy(suits, s => s);
 
     const inGamePlayers = gameState.players.reduce(
-      (acc, player) => (acc + (player.status !== "out" ? 1 : 0)),
+      (acc, player) => acc + (player.status !== "out" ? 1 : 0),
       0
     );
-    console.error('ingameplayers', inGamePlayers);
+    console.error("ingameplayers", inGamePlayers);
 
     const allIn = me.stack - me.bet;
     if (!gameState.community_cards.length) {
@@ -165,7 +177,7 @@ export class Player {
         return betCallback(lastPositionBet(gameState));
     }
 
-    console.error('abovePoker');
+    console.error("abovePoker");
 
     if (hasPoker(rankGroups)) {
       return betCallback(allIn);
