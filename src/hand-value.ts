@@ -1,11 +1,8 @@
-interface Card {
-  rank: string;
-  suit: string;
-}
+import { Card } from "./interfaces";
 
-interface Card2 {
+export interface Card2 {
   rank: number;
-  suit: string;
+  suit: "clubs" | "spades" | "hearts" | "diamonds";
 }
 
 const rankToNumber = (card: Card): Card2 => {
