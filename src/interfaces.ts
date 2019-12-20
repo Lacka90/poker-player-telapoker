@@ -1,4 +1,18 @@
-export const rankOrder = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+export const rankOrder = [
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "J",
+  "Q",
+  "K",
+  "A"
+];
 
 export interface GameState {
   /** ID of the current tournament */
@@ -15,6 +29,8 @@ export interface GameState {
   bet_index: number;
   /** The small blind in the current round. The big blind is twice the small blind */
   small_blind: number;
+  /** The big blind in the current round. The big blind is twice the small blind */
+  big_blind: number;
   /** The amount of the largest current bet from any one player */
   current_buy_in: number;
   /** The size of the pot (sum of the player bets) */

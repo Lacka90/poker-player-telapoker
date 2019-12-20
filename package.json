@@ -1,24 +1,30 @@
 {
-    "name": "poker-player-typescript",
-    "description": "TypeScript player from lean poker. http://leanpoker.org",
-    "version": "0.0.1",
-    "private": true,
-    "scripts": {
-        "postinstall": "npm run build",
-        "start": "node out/index.js",
-        "build": "./node_modules/.bin/typings i && ./node_modules/.bin/tsc -p ./"
-    },
-    "dependencies": {
-        "@types/lodash": "4.14.149",
-        "body-parser": "1.15.2",
-        "express": "4.14.0",
-        "lodash": "4.17.15",
-        "ts-node": "8.5.4",
-        "typescript": "^1.8.10",
-        "typings": "latest"
-    },
-    "engines": {
-        "node": "4.4.7",
-        "npm": "3.10.5"
-    }
+  "name": "poker-player-typescript",
+  "description": "TypeScript player from lean poker. http://leanpoker.org",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm run build",
+    "start": "node out/index.js",
+    "test": "jest",
+    "build": "./node_modules/.bin/typings i && ./node_modules/.bin/tsc -p ./"
+  },
+  "dependencies": {
+    "@types/lodash": "4.14.149",
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "lodash": "4.17.15",
+    "ts-node": "8.5.4",
+    "typings": "latest"
+  },
+  "engines": {
+    "node": "4.4.7",
+    "npm": "3.10.5"
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.24",
+    "jest": "24.9.0",
+    "ts-jest": "24.2.0",
+    "typescript": "3.7.3"
+  }
 }
