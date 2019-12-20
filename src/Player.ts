@@ -94,7 +94,7 @@ function potSizedBet(
   min = 0
 ) {
   max = Math.min(ourMoney, max);
-  min = Math.min(ourMoney, min);
+  min = Math.min(ourMoney, min, 0);
   const bet = Math.floor(pot * percent);
   return bet < min ? min : bet > max ? max : bet;
 }
@@ -135,7 +135,7 @@ export class Player {
     );
     console.error("ingameplayers", inGamePlayers);
 
-    const allIn = me.stack - me.bet;
+    const allIn = Math.max(me.stack, 0);
     if (!gameState.community_cards.length) {
       const value = handValue(cards);
       if (inGamePlayers > 2) {
@@ -173,8 +173,9 @@ export class Player {
         }
       }
 
-      if (lastPositionBet(gameState) > 0)
+      if (lastPositionBet(gameState) > 0) {
         return betCallback(lastPositionBet(gameState));
+      }
     }
 
     console.error("abovePoker");
@@ -206,7 +207,7 @@ export class Player {
     }
 
     if (howManyOfTheSameRank(rankGroups, 2).found >= 2) {
-      return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 150, 10));
+      return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 150, 50));
     }
 
     if (howManyOfTheSameRank(rankGroups, 2).found === 1) {
