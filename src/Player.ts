@@ -60,7 +60,15 @@ function isBiggerByOne(i: number, j: number): boolean {
   return j === i + 1;
 }
 
-function potSizedBet(pot: number, percent: number, max = 4000, min = 0) {
+function potSizedBet(
+  ourMoney: number,
+  pot: number,
+  percent: number,
+  max = 4000,
+  min = 0
+) {
+  max = Math.min(ourMoney, max);
+  min = Math.min(ourMoney, min);
   const bet = Math.floor(pot * percent);
   return bet < min ? min : bet > max ? max : bet;
 }
@@ -106,12 +114,12 @@ export class Player {
 
     const hasFlush = isFlush(suitGroups);
     if (hasFlush) {
-      return betCallback(potSizedBet(gameState.pot, 1, 1500, 250));
+      return betCallback(potSizedBet(allIn, gameState.pot, 1, 1500, 250));
     }
 
     const hasStraight = isStraight([...gameState.community_cards, ...cards]);
     if (hasStraight) {
-      return betCallback(potSizedBet(gameState.pot, 0.6, 1000, 200));
+      return betCallback(potSizedBet(allIn, gameState.pot, 0.6, 1000, 200));
     }
 
     const drill = hasEqualRank(rankGroups, 3);
@@ -123,14 +131,14 @@ export class Player {
       const fullHouse = hasEqualRank(rankGroups, 2);
 
       if (fullHouse.found) {
-        return betCallback(potSizedBet(gameState.pot, 1.2, 4000, 300));
+        return betCallback(potSizedBet(allIn, gameState.pot, 1.2, 4000, 300));
       }
 
-      return betCallback(potSizedBet(gameState.pot, 0.6, 800, 150));
+      return betCallback(potSizedBet(allIn, gameState.pot, 0.6, 800, 150));
     }
 
     if (hasEqualRank(rankGroups, 2).found) {
-      return betCallback(potSizedBet(gameState.pot, 0.8, 100, 10));
+      return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 100, 10));
     }
 
     return betCallback(0);
