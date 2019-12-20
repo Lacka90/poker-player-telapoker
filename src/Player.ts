@@ -37,17 +37,17 @@ export class Player {
     if (!gameState.community_cards.length) {
       const value = handValue(cards);
       if (value === 1) return betCallback(allIn);
-      if (value > 4)
+      if (value < 4)
         return betCallback(
           Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
         );
-      if (value <= 4 && value > 7) {
+      if (value >= 4 && value < 7) {
         if (gameState.current_buy_in < 50) {
           return betCallback(
             Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
           );
         }
-      } else return betCallback(0);
+      }
     }
 
     if (hasEqualRank(rankGroups, 4).found) {
