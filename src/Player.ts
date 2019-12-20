@@ -94,7 +94,7 @@ function potSizedBet(
   min = 0
 ) {
   max = Math.min(ourMoney, max);
-  min = Math.min(ourMoney, min);
+  min = Math.min(ourMoney, min, 0);
   const bet = Math.floor(pot * percent);
   return bet < min ? min : bet > max ? max : bet;
 }
@@ -118,11 +118,11 @@ export class Player {
     const suitGroups = _.groupBy(suits, s => s);
 
     const inGamePlayers = gameState.players.reduce(
-      (acc, player) => (acc + (player.status !== "out" ? 1 : 0)),
+      (acc, player) => acc + (player.status !== "out" ? 1 : 0),
       0
     );
 
-    const allIn = me.stack - me.bet;
+    const allIn = Math.max(me.stack, 0);
     if (!gameState.community_cards.length) {
       const value = handValue(cards);
       if (inGamePlayers > 2) {
