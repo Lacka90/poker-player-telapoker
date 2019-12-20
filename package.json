@@ -9,10 +9,12 @@
         "build": "./node_modules/.bin/typings i && ./node_modules/.bin/tsc -p ./"
     },
     "dependencies": {
-        "express": "4.14.0",
+        "@types/lodash": "4.14.149",
         "body-parser": "1.15.2",
-        "typings": "latest",
-        "typescript": "^1.8.10"
+        "express": "4.14.0",
+        "lodash": "4.17.15",
+        "typescript": "^1.8.10",
+        "typings": "latest"
     },
     "engines": {
         "node": "4.4.7",
