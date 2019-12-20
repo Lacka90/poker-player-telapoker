@@ -33,10 +33,10 @@ function isStraight(allCards: Card[]): boolean {
     const next3 = sortedUnique[i + 3];
     const next4 = sortedUnique[i + 4];
     if (
-      this.isBiggerByOne(current, next1) &&
-      this.isBiggerByOne(next1, next2) &&
-      this.isBiggerByOne(next2, next3) &&
-      this.isBiggerByOne(next3, next4)
+      isBiggerByOne(current, next1) &&
+      isBiggerByOne(next1, next2) &&
+      isBiggerByOne(next2, next3) &&
+      isBiggerByOne(next3, next4)
     ) {
       return true;
     }
