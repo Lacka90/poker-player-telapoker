@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { Player } from './Player';
 
-const VERSION = "Straight added";
+const VERSION = "2-pairs";
 
 const app = express();
 const player = new Player();
