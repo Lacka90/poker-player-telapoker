@@ -1,4 +1,4 @@
-import { GameState, HoleCard, rankOrder } from "./interfaces";
+import { GameState, Card, rankOrder } from "./interfaces";
 import * as _ from "lodash";
 
 function hasEqualRank(rankGroups: { [rank: string]: string[] }, num: number) {
@@ -23,12 +23,12 @@ export class Player {
     const cards = me.hole_cards;
     const ranks = [
       ...cards.map(c => c.rank),
-      ...gameState.community_cards.map(c => c.rank)
+      ...(gameState.community_cards || []).map(c => c.rank)
     ];
     const rankGroups = _.groupBy(ranks, r => r);
     const allIn = me.stack - me.bet;
     if (hasEqualRank(rankGroups, 4).found) {
-      betCallback(allIn);
+      return betCallback(allIn);
     }
 
     const drill = hasEqualRank(rankGroups, 3);
@@ -54,12 +54,18 @@ export class Player {
       return betCallback(100);
     }
 
+    if (gameState.current_buy_in < 50) {
+      return betCallback(
+        Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+      );
+    }
+
     return betCallback(0);
   }
 
   public showdown(gameState: any): void {}
   
-  private isStraight(allCards: HoleCard[]): boolean { //szamsor
+  private isStraight(allCards: Card[]): boolean { //szamsor
     if (!allCards || allCards.length < 5) {
       return false;
     }
