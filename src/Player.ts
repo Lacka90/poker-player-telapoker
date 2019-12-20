@@ -1,6 +1,7 @@
 import { GameState, Card, rankOrder } from "./interfaces";
 import * as _ from "lodash";
 import { handValue } from "./hand-value";
+import { lastPositionBet } from "./heads-up";
 
 function howManyOfTheSameRank(
   rankGroups: { [rank: string]: string[] },
@@ -150,7 +151,7 @@ export class Player {
             );
           }
         }
-        if (value >= 6 && value < 8) {
+        if (value >= 6 && value <= 8) {
           if (gameState.current_buy_in < 50) {
             return betCallback(
               Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
@@ -158,6 +159,9 @@ export class Player {
           }
         }
       }
+
+      if (lastPositionBet(gameState) > 0)
+        return betCallback(lastPositionBet(gameState));
     }
 
     if (hasPoker(rankGroups)) {
@@ -193,7 +197,8 @@ export class Player {
     if (howManyOfTheSameRank(rankGroups, 2).found === 1) {
       return betCallback(potSizedBet(allIn, gameState.pot, 0.8, 100, 10));
     }
-
+    if (lastPositionBet(gameState) > 0)
+      return betCallback(lastPositionBet(gameState));
     return betCallback(0);
   }
 
