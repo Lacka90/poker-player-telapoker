@@ -160,8 +160,9 @@ export class Player {
         }
       }
 
-      if (lastPositionBet(gameState) > 0)
+      if (lastPositionBet(gameState) > 0) {
         return betCallback(lastPositionBet(gameState));
+      }
     }
 
     if (hasPoker(rankGroups)) {
