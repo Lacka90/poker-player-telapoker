@@ -28,7 +28,7 @@ export class Player {
     const rankGroups = _.groupBy(ranks, r => r);
     const allIn = me.stack - me.bet;
     if (hasEqualRank(rankGroups, 4).found) {
-      betCallback(allIn);
+      return betCallback(allIn);
     }
 
     const drill = hasEqualRank(rankGroups, 3);
