@@ -12,7 +12,7 @@ function hasEqualRank(rankGroups: { [rank: string]: string[] }, num: number) {
     }
   });
 
-  return { rank, found };
+  return { rank: found ? rank : undefined, found };
 }
 
 export class Player {
@@ -59,14 +59,19 @@ export class Player {
       return betCallback(allIn);
     }
 
-    const hasStraight = this.isStraight([...gameState.community_cards, ...cards]);
+    const hasStraight = this.isStraight([
+      ...gameState.community_cards,
+      ...cards
+    ]);
     if (hasStraight) {
       return betCallback(250);
     }
-    
+
     const drill = hasEqualRank(rankGroups, 3);
     if (drill.found) {
-      delete rankGroups[drill.rank];
+      if (drill.rank) {
+        delete rankGroups[drill.rank];
+      }
 
       const fullHouse = hasEqualRank(rankGroups, 2);
 
@@ -115,7 +120,12 @@ export class Player {
     return false;
   }
 
-  private isFlush(suitGroups: _.Dictionary<("clubs" | "spades" | "hearts" | "diamonds")[]> = {}): boolean { //szinsor
+  private isFlush(
+    suitGroups: _.Dictionary<
+      ("clubs" | "spades" | "hearts" | "diamonds")[]
+    > = {}
+  ): boolean {
+    //szinsor
     Object.keys(suitGroups).forEach(key => {
       if (suitGroups[key].length >= 5) {
         return true;
