@@ -1,5 +1,6 @@
 import { GameState, Card, rankOrder } from "./interfaces";
 import * as _ from "lodash";
+import { handValue } from "./hand-value";
 
 function hasEqualRank(rankGroups: { [rank: string]: string[] }, num: number) {
   let rank;
@@ -27,14 +28,22 @@ export class Player {
     ];
     const rankGroups = _.groupBy(ranks, r => r);
     const allIn = me.stack - me.bet;
+    if (!gameState.community_cards.length) {
+      const value = handValue(cards);
+      if (value === 1) return betCallback(allIn);
+    }
+
     if (hasEqualRank(rankGroups, 4).found) {
       return betCallback(allIn);
     }
 
     const drill = hasEqualRank(rankGroups, 3);
     const pair = cards[0].rank === cards[1].rank;
-    const hasStraight = this.isStraight([...gameState.community_cards, ...cards]);
-    if(hasStraight) {
+    const hasStraight = this.isStraight([
+      ...gameState.community_cards,
+      ...cards
+    ]);
+    if (hasStraight) {
       betCallback(150);
     }
 
@@ -64,37 +73,39 @@ export class Player {
   }
 
   public showdown(gameState: any): void {}
-  
-  private isStraight(allCards: Card[]): boolean { //szamsor
+
+  private isStraight(allCards: Card[]): boolean {
+    //szamsor
     if (!allCards || allCards.length < 5) {
       return false;
     }
-    const sortedUnique = _.uniq(allCards.map(card => rankOrder.indexOf(card.rank)).sort());
+    const sortedUnique = _.uniq(
+      allCards.map(card => rankOrder.indexOf(card.rank)).sort()
+    );
     if (sortedUnique.length < 5) {
       return false;
     }
     for (let i = 0; i <= sortedUnique.length - 5; i++) {
       const current = sortedUnique[i];
-      const next1 = sortedUnique[i+1];
-      const next2 = sortedUnique[i+2];
-      const next3 = sortedUnique[i+3];
-      const next4 = sortedUnique[i+4];
-      if (this.isBiggerByOne(current, next1) &&
-        this.isBiggerByOne(next1, next2) && 
-        this.isBiggerByOne(next2, next3) && 
-        this.isBiggerByOne(next3, next4)  
+      const next1 = sortedUnique[i + 1];
+      const next2 = sortedUnique[i + 2];
+      const next3 = sortedUnique[i + 3];
+      const next4 = sortedUnique[i + 4];
+      if (
+        this.isBiggerByOne(current, next1) &&
+        this.isBiggerByOne(next1, next2) &&
+        this.isBiggerByOne(next2, next3) &&
+        this.isBiggerByOne(next3, next4)
       ) {
         return true;
       }
-
     }
     return false;
   }
 
   private isBiggerByOne(i: number, j: number): boolean {
-    return j === i+1;
+    return j === i + 1;
   }
 }
-
 
 export default Player;
