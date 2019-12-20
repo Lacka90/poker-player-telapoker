@@ -5,7 +5,7 @@ export interface Card2 {
   suit: "clubs" | "spades" | "hearts" | "diamonds";
 }
 
-const rankToNumber = (card: Card): Card2 => {
+export const rankToNumber = (card: Card): Card2 => {
   const _rank = card.rank.toUpperCase();
   const rank = !isNaN(Number(card.rank))
     ? Number(card.rank)

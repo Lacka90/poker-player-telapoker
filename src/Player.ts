@@ -61,6 +61,11 @@ function isBiggerByOne(i: number, j: number): boolean {
   return j === i + 1;
 }
 
+function potSizedBet(pot: number, percent: number, max = 4000, min = 0) {
+  const bet = Math.floor(pot * percent);
+  return bet < min ? min : bet > max ? max : bet;
+}
+
 export class Player {
   public betRequest(
     gameState: GameState,
@@ -101,11 +106,11 @@ export class Player {
     }
 
     if (hasFlush(suitGroups)) {
-      return betCallback(allIn / 2);
+      return betCallback(potSizedBet(gameState.pot, 1, 1500, 250));
     }
 
     if (hasStraight([...gameState.community_cards, ...cards])) {
-      return betCallback(250);
+      return betCallback(potSizedBet(gameState.pot, 0.6, 1000, 200));
     }
 
     const drill = howManyOfTheSameRank(rankGroups, 3);
@@ -115,18 +120,18 @@ export class Player {
       const pairAboveDrill = howManyOfTheSameRank(drillRankGroups, 2);
 
       if (pairAboveDrill.found >= 1) { // fullhouse
-        return betCallback(allIn / 2);
+        return betCallback(potSizedBet(gameState.pot, 1.2, 4000, 300));
       }
 
-      return betCallback(200);
+      return betCallback(potSizedBet(gameState.pot, 0.6, 800, 150));
     }
 
     if (howManyOfTheSameRank(rankGroups, 2).found >= 2) {
-      return betCallback(150);
+      return betCallback(potSizedBet(gameState.pot, 0.8, 150, 10));
     }
 
     if (howManyOfTheSameRank(rankGroups, 2).found === 1) {
-      return betCallback(100);
+      return betCallback(potSizedBet(gameState.pot, 0.8, 100, 10));
     }
 
     return betCallback(0);
