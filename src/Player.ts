@@ -116,19 +116,46 @@ export class Player {
     const rankGroups = _.groupBy(ranks, r => r);
     const suitGroups = _.groupBy(suits, s => s);
 
+    const inGamePlayers = gameState.players.reduce(
+      (acc, player) => (acc + player.status !== "out" ? 1 : 0),
+      0
+    );
+
     const allIn = me.stack - me.bet;
     if (!gameState.community_cards.length) {
       const value = handValue(cards);
-      if (value === 1) return betCallback(allIn);
-      if (value < 4)
-        return betCallback(
-          Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
-        );
-      if (value >= 4 && value < 7) {
-        if (gameState.current_buy_in < 50) {
+      if (inGamePlayers > 2) {
+        if (value === 1) return betCallback(allIn);
+        if (value < 4)
           return betCallback(
             Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
           );
+        if (value >= 4 && value < 7) {
+          if (gameState.current_buy_in < 50) {
+            return betCallback(
+              Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+            );
+          }
+        }
+      } else {
+        if (value === 2) return betCallback(allIn);
+        if (value < 5)
+          return betCallback(
+            Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+          );
+        if (value >= 5 && value < 6) {
+          if (gameState.current_buy_in < 100) {
+            return betCallback(
+              Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+            );
+          }
+        }
+        if (value >= 6 && value < 8) {
+          if (gameState.current_buy_in < 50) {
+            return betCallback(
+              Math.max(gameState.current_buy_in - me.bet, gameState.small_blind)
+            );
+          }
         }
       }
     }
