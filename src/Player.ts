@@ -12,7 +12,7 @@ function hasEqualRank(rankGroups: { [rank: string]: string[] }, num: number) {
     }
   });
 
-  return { rank, found };
+  return { rank: found ? rank : undefined, found };
 }
 
 function isStraight(allCards: Card[]): boolean {
@@ -101,14 +101,19 @@ export class Player {
       return betCallback(allIn / 2);
     }
 
-    const hasStraight = isStraight([...gameState.community_cards, ...cards]);
+    const hasStraight = isStraight([
+      ...gameState.community_cards,
+      ...cards
+    ]);
     if (hasStraight) {
       return betCallback(250);
     }
-    
+
     const drill = hasEqualRank(rankGroups, 3);
     if (drill.found) {
-      delete rankGroups[drill.rank];
+      if (drill.rank) {
+        delete rankGroups[drill.rank];
+      }
 
       const fullHouse = hasEqualRank(rankGroups, 2);
 
